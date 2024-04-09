@@ -26,7 +26,9 @@ async fn main() {
           Command::new("/bin/bash")
             .arg("-c")
             .arg(cmd)
-            .output()
+            .spawn()
+            .unwrap()
+            .wait()
             .await
             .unwrap();
         }
