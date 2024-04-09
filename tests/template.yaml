@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  PostRunnerLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ./layer
+      CompatibleArchitectures:
+        - x86_64
+
+  PostRunnerTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs20.x
+      InlineCode: |
+        exports.handler = async function(event) {
+          return {
+            statusCode: 200,
+            body: "hello"
+          }
+        };
+      MemorySize: 1024
+      Timeout: 30
+      Layers:
+        - !Ref PostRunnerLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_POST_RUNNER_COMMAND: sleep 5 && echo done
+
+Outputs:
+  API:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
