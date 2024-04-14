@@ -42,5 +42,8 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
   - Yes. E.g. you can package your binary executable in a lambda layer. [When you add a layer to a function, Lambda loads the layer content into the `/opt` directory of that execution environment](https://docs.aws.amazon.com/lambda/latest/dg/packaging-layers.html#packaging-layers-paths). You can use `/opt/xxx` to run your binary.
 - Q: How does this work?
   - By using [AWS Lambda Runtime Proxy](https://github.com/DiscreteTom/aws-lambda-runtime-proxy) this tool can intercept the lambda handler function's return value and run the command after that.
+- Q: Can I run some logic in another thread of the handler process after the handler function returns, instead of running a separate command?
+  - It depends on the runtime. If the runtime is blocked when waiting for the runtime API response, then the post processing logic might not be executed.
+  - For example in NodeJS runtime, the Lambda Runtime API client is [implemented in C++](https://github.com/aws/aws-lambda-nodejs-runtime-interface-client/blob/2ce88619fd176a5823bc5f38c5484d1cbdf95717/src/rapid-client.cc). When we suppress the runtime API invocation, the C++ code will wait for the response and block the execution of NodeJS code. You can verify this by add a `setInterval(() => console.log('tick'), 100)` to your NodeJS code and sleep for some seconds in the post runner command. You will see the `tick` stops during the sleep time.
 
 ## [CHANGELOG](./CHANGELOG.md)
