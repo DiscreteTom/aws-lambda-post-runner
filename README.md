@@ -25,7 +25,7 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 
 1. Download the prebuilt zip from the [release page](https://github.com/DiscreteTom/aws-lambda-post-runner/releases/latest) to get the `aws-lambda-post-runner` executable. You can also build it yourself by running `cargo build --release`.
 2. Modify the entry command of the lambda function to `aws-lambda-post-runner <handler-command> <handler-args>`
-4. Configure the [environment variables](#environment-variables) below to set the command you want to run.
+3. Configure the [environment variables](#environment-variables) below to set the command you want to run.
 
 ### Environment Variables
 
