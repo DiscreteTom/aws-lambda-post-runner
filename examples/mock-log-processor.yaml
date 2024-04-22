@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  MockLogProcessorLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ./layer
+      CompatibleArchitectures:
+        - x86_64
+
+  MockLogProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs20.x
+      InlineCode: |
+        exports.handler = async function(event) {
+          process.stdout.write('from stdout\n');
+          process.stderr.write('from stderr\n');
+          return {
+            statusCode: 200,
+            body: "hello"
+          }
+        };
+      MemorySize: 1024
+      Timeout: 10
+      Layers:
+        - !Ref MockLogProcessorLayer
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/mock-log-processor-entry.sh
+          AWS_LAMBDA_POST_RUNNER_COMMAND: kill -SIGUSR1 `cat /tmp/MOCK_LOG_PROCESSOR_PID` && /opt/mock-log-processor-checker

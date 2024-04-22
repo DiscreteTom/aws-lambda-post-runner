@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 aws-lambda-runtime-proxy = "0.2.1"
+
+[dev-dependencies]
+posixmq = "1.0.0"
