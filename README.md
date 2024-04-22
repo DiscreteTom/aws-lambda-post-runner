@@ -32,6 +32,8 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 - `AWS_LAMBDA_POST_RUNNER_COMMAND` (required)
   - The command to run after the lambda handler function returns.
 
+### [Examples](./examples/)
+
 ## FAQ
 
 - Q: Will this save my money by running some logic after the lambda handler returns?
