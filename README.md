@@ -49,6 +49,8 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
   - Try to set the command to something like `sleep 10 && echo done` then invoke the lambda via API Gateway. You should see your HTTP response immediately and the logs show `done` after 10 seconds.
 - Q: Can I bring my own binary executable and run it in the command?
   - Yes. E.g. you can package your binary executable in a lambda layer. [When you add a layer to a function, Lambda loads the layer content into the `/opt` directory of that execution environment](https://docs.aws.amazon.com/lambda/latest/dg/packaging-layers.html#packaging-layers-paths). You can use `/opt/xxx` to run your binary.
+- Q: Will the command be executed when the lambda function timeout?
+  - No. When timeout nothing can be executed.
 - Q: How does this work?
   - By using [AWS Lambda Runtime Proxy](https://github.com/DiscreteTom/aws-lambda-runtime-proxy) this tool can intercept the lambda handler function's return value and run the command after that.
 - Q: Can I run some logic in another thread of the handler process after the handler function returns, instead of running a separate command?
