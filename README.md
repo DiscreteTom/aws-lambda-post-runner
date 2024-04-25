@@ -21,7 +21,7 @@ This is helpful if you want to response to the synchronous invoker (e.g. API gat
 
 ### As a Binary Executable
 
-If you are using a custom lambda runtime (for rust, golang, c++, etc) or container image, you can run the filter as a parent process of your main handler process.
+If you are using a custom lambda runtime (for rust, golang, c++, etc) or container image, you can run this as a parent process of your main handler process.
 
 1. Download the prebuilt zip from the [release page](https://github.com/DiscreteTom/aws-lambda-post-runner/releases/latest) to get the `aws-lambda-post-runner` executable. You can also build it yourself by running `cargo build --release`.
 2. Modify the entry command of the lambda function to `aws-lambda-post-runner <handler-command> <handler-args>`
