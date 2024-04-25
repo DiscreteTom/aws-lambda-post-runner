@@ -1,10 +1,28 @@
 use aws_lambda_runtime_proxy::{LambdaRuntimeApiClient, Proxy};
 use tokio::process::Command;
 
+// mode bit flags
+const AFTER_RESPONSE: usize = 1 << 0;
+const AFTER_ERROR: usize = 1 << 1;
+
 #[tokio::main]
 async fn main() {
   let cmd = std::env::var("AWS_LAMBDA_POST_RUNNER_COMMAND")
     .expect("No command found for aws-lambda-post-runner");
+
+  let mode = std::env::var("AWS_LAMBDA_POST_RUNNER_MODE")
+    .map(|mode| {
+      mode
+        .split(',')
+        .map(|m| match m {
+          "AfterResponse" => AFTER_RESPONSE,
+          "AfterError" => AFTER_ERROR,
+          _ => panic!("Invalid mode for aws-lambda-post-runner: {}", m),
+        })
+        .fold(0, |acc, m| acc | m)
+    })
+    // default to all modes
+    .unwrap_or(usize::MAX);
 
   Proxy::default()
     .spawn()
@@ -15,13 +33,18 @@ async fn main() {
 
       async move {
         let path = req.uri().path();
-        let is_handler_response =
-          path.starts_with("/2018-06-01/runtime/invocation/") && path.ends_with("/response");
 
+        let need_exec = (mode & AFTER_RESPONSE != 0
+          && path.starts_with("/2018-06-01/runtime/invocation/")
+          && path.ends_with("/response"))
+          || (mode & AFTER_ERROR != 0
+            && path.starts_with("/2018-06-01/runtime/invocation/")
+            && path.ends_with("/error"));
+
+        // forward the request
         let res = LambdaRuntimeApiClient::forward(req).await;
 
-        if is_handler_response {
-          // current request is a handler's response,
+        if need_exec {
           // before proceed, run the command
           Command::new("/bin/bash")
             .arg("-c")

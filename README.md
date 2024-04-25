@@ -31,6 +31,13 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 
 - `AWS_LAMBDA_POST_RUNNER_COMMAND` (required)
   - The command to run after the lambda handler function returns.
+- `AWS_LAMBDA_POST_RUNNER_MODE`
+  - Controls when the command is executed.
+  - Possible values are:
+    - `AfterResponse`
+    - `AfterError`
+    - Multiple values can be separated by `,`.
+  - If not set, the default value is `AfterResponse,AfterError`.
 
 ### [Examples](./examples/)
 
