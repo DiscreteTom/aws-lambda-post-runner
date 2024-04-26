@@ -38,6 +38,8 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
     - `AfterError`
     - Multiple values can be separated by `,`.
   - If not set, the default value is `AfterResponse,AfterError`.
+- `AWS_LAMBDA_POST_RUNNER_LOG_LEVEL`
+  - The log level. Set to `debug` to print debug logs.
 
 ### [Examples](./examples/)
 
