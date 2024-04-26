@@ -36,6 +36,7 @@ Resources:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
           AWS_LAMBDA_POST_RUNNER_COMMAND: sleep 5 && echo done
           AWS_LAMBDA_POST_RUNNER_MODE_: AfterResponse
+          AWS_LAMBDA_POST_RUNNER_LOG_LEVEL_: debug
 
 Outputs:
   API:
