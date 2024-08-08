@@ -1,3 +1,6 @@
+> [!NOTE]
+> Moved to https://github.com/aws-samples/aws-lambda-post-runner
+
 # AWS Lambda Post Runner
 
 [![version](https://img.shields.io/github/v/tag/DiscreteTom/aws-lambda-post-runner?label=release&style=flat-square)](https://github.com/DiscreteTom/aws-lambda-post-runner/releases/latest)
