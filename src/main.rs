@@ -1,7 +1,8 @@
 use aws_lambda_runtime_proxy::{LambdaRuntimeApiClient, Proxy};
 use env_logger::Env;
 use log::debug;
-use tokio::process::Command;
+use std::sync::Arc;
+use tokio::{process::Command, sync::Mutex};
 
 // mode bit flags
 const AFTER_RESPONSE: usize = 1 << 0;
@@ -32,16 +33,35 @@ async fn main() {
     .unwrap_or(usize::MAX);
   debug!("parsed AWS_LAMBDA_POST_RUNNER_MODE: {}", mode);
 
+  let initialized = Arc::new(Mutex::new(false));
+
   Proxy::default()
     .spawn()
     .await
     .server
     .serve(move |req| {
       let cmd = cmd.clone();
+      let initialized = initialized.clone();
 
       async move {
         let path = req.uri().path();
         debug!("got runtime api request: {}", path);
+
+        if path == "/2018-06-01/runtime/invocation/next" {
+          let mut initialized = initialized.lock().await;
+          if !*initialized {
+            debug!("sending SIGUSR2 to the log processor");
+            Command::new("/bin/bash")
+              .arg("-c")
+              .arg("kill -SIGUSR2 `cat /tmp/MOCK_LOG_PROCESSOR_PID`")
+              .spawn()
+              .unwrap()
+              .wait()
+              .await
+              .unwrap();
+            *initialized = true;
+          }
+        }
 
         let need_exec = (mode & AFTER_RESPONSE != 0
           && path.starts_with("/2018-06-01/runtime/invocation/")
